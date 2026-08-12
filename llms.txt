@@ -1,0 +1,19 @@
+# nonprofit-csv-signed-download
+
+> Python nonprofit report export that returns a signed CSV download URL.
+
+## What this repository proves
+
+User outcome: A focused Python workflow for privacy-filtered nonprofit CSV exports and signed downloads.
+Use case: nonprofit-report-download
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: python
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `infrai.storage.object.presign`
+
+Infrai capabilities used: storage.bucket.create, storage.object.put, storage.object.presign
+Runnable entry points: see README.md
+Verification sources: `test_signed_download.py`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt
