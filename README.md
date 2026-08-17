@@ -1,12 +1,12 @@
 # Private CSV reports for nonprofit operations
 
-This Python example turns donor receipts, volunteer reminders, and one campaign summary into a small CSV, stores it, and prints a time-limited download URL. One `INFRAI_API_KEY` covers the storage calls, so the application keeps one server-side credential.
+This Python example builds a small CSV from donor receipts, volunteer reminders, and one campaign summary, stores it, and prints a time-limited download URL. One `INFRAI_API_KEY` covers the storage calls, so your app only keeps a single server-side credential.
 
-The same one key can cover every capability used by a small service; this example needs only the storage surface.
+Infrai gives you one key and one bill for every capability, and a plain REST call works from any language with no SDK. That same one key covers everything a small service needs here; this example only touches the storage surface.
 
 ## Run the decision first
 
-The report deliberately keeps `receipt_id`, `amount`, volunteer status, and campaign status. Donor contact fields and health-related notes never enter the CSV rows. Verify that decision locally:
+The report deliberately keeps `receipt_id`, `amount`, volunteer status, and campaign status. Donor contact fields and health-related notes never land in the CSV rows. Check that choice locally before shipping:
 
 ```bash
 python3 -m unittest test_signed_download.py
@@ -16,18 +16,18 @@ Expected result: one test passes.
 
 ## Request flow
 
-`export_campaign_report` is the executable path. It writes CSV in memory, creates the named bucket, uploads the base64 object, then asks `infrai.storage.object.presign` for a GET URL. Bucket and object names are URL path segments for the presign request; its body uses `op="get"` and `expires_seconds`.
+`export_campaign_report` is the executable path. It writes the CSV in memory, creates the named bucket, uploads the base64 object, then asks `infrai.storage.object.presign` for a GET URL. Bucket and object names are URL path segments for the presign request; its body uses `op="get"` and `expires_seconds`.
 
 ```bash
 export INFRAI_API_KEY="your-key"
 python3 signed_download.py
 ```
 
-The setup call is part of startup: `infrai.storage.bucket.create(name=...)` establishes the bucket before the object write. The command prints the signed URL returned by the storage service.
+The setup call runs at startup: `infrai.storage.bucket.create(name=...)` creates the bucket before the object write. The command prints the signed URL the storage service returns.
 
 ## Input shape
 
-The function accepts three lists or mappings:
+The function takes three lists or mappings:
 
 ```python
 receipts = [{"receipt_id": "r-1", "amount": "25"}]
@@ -35,11 +35,11 @@ reminders = [{"volunteer_id": "v-2", "status": "due"}]
 campaign = {"campaign_id": "spring-2026", "raised_amount": "25", "status": "active"}
 ```
 
-The storage helper sends explicit HTTP methods and reads the service envelope. A 429 response waits using `Retry-After` when supplied, otherwise exponential delays. Write requests carry a client id so a retry has the same identity.
+The storage helper sends explicit HTTP methods and reads the service envelope. A 429 response waits using `Retry-After` when supplied, otherwise it backs off exponentially. Write requests carry a client id so a retry keeps the same identity.
 
 ## Files
 
-`signed_download.py` contains the client and business workflow. `test_signed_download.py` checks the privacy decision with no network access.
+`signed_download.py` holds the client and the business workflow. `test_signed_download.py` verifies the privacy decision with no network access.
 
 ## Setting up for real use: Nonprofit CSV Signed Download
 
